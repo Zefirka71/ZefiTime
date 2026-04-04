@@ -86,14 +86,11 @@ INSTALLED_APPS = [
     'api',
 ]
 
+# WhiteNoise нужен и при DEBUG=True, если приложение крутится под gunicorn:
+# у runserver Django сам отдаёт static, у gunicorn — нет, без этого админка без CSS.
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-]
-
-if not DEBUG:
-    MIDDLEWARE.append('whitenoise.middleware.WhiteNoiseMiddleware')
-
-MIDDLEWARE += [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'api.middleware.ApiRequestDebugLogMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
