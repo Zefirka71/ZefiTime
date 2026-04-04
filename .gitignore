@@ -11,3 +11,4 @@ server_app/staticfiles/
 server_app/db.sqlite3
 server_app/media/
 local_data.db
+*.log
