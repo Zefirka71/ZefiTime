@@ -5,16 +5,27 @@
 #
 # Опции:
 #   PORT=8000              — порт gunicorn
-#   SERVICE_USER=zefitime  — системный пользователь (создаётся при отсутствии)
+#   SERVICE_USER=...       — пользователь systemd/gunicorn (по умолчанию см. ниже)
+#
+# Если клон в /home/ВАШ_ЛОГИН/... (VirtualBox), пользователь zefitime не может зайти
+# в чужой $HOME (часто 700) — будет «Отказано в доступе» на cd .../server_app.
+# Тогда скрипт берёт владельца репозитория. На VPS в /opt/... по умолчанию — zefitime.
 
 set -euo pipefail
 
 PORT="${PORT:-8000}"
-SERVICE_USER="${SERVICE_USER:-zefitime}"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SERVER_DIR="${REPO_ROOT}/server_app"
 VENV="${SERVER_DIR}/.venv"
+
+REPO_OWNER="$(stat -c '%U' "${REPO_ROOT}")"
+if [[ "${REPO_ROOT}" == /home/* ]]; then
+  SERVICE_USER="${SERVICE_USER:-${REPO_OWNER}}"
+  echo "Репозиторий в \$HOME — сервис будет работать от пользователя: ${SERVICE_USER}"
+else
+  SERVICE_USER="${SERVICE_USER:-zefitime}"
+fi
 
 die() { echo "ERROR: $*" >&2; exit 1; }
 
@@ -32,7 +43,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
 apt-get install -y -qq python3 python3-venv python3-pip git
 
-if ! id -u "${SERVICE_USER}" >/dev/null 2>&1; then
+if [[ "${SERVICE_USER}" == zefitime ]] && ! id -u "${SERVICE_USER}" >/dev/null 2>&1; then
   useradd --system --home "${SERVER_DIR}" --shell /usr/sbin/nologin "${SERVICE_USER}" || true
 fi
 
