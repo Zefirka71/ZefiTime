@@ -1,0 +1,270 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<style>
+    .export-container {
+        max-width: 700px;
+        margin: 30px auto;
+        padding: 0;
+    }
+
+    .export-header {
+        background: linear-gradient(135deg, #417690 0%, #2d5a7b 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 8px 8px 0 0;
+        text-align: center;
+    }
+
+    .export-header h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .export-header p {
+        margin: 8px 0 0 0;
+        opacity: 0.9;
+        font-size: 14px;
+    }
+
+    .export-content {
+        background: white;
+        padding: 40px;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .form-section {
+        margin-bottom: 30px;
+    }
+
+    .form-section-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #417690;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #417690;
+    }
+
+    .form-row {
+        margin-bottom: 20px;
+    }
+
+    .form-row label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .form-row input[type="text"],
+    .form-row input[type="date"],
+    .form-row select {
+        width: 100%;
+        padding: 11px 14px;
+        border: 2px solid #e0e0e0;
+        border-radius: 4px;
+        font-size: 14px;
+        box-sizing: border-box;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-row input[type="text"]:focus,
+    .form-row input[type="date"]:focus,
+    .form-row select:focus {
+        outline: none;
+        border-color: #417690;
+        box-shadow: 0 0 0 3px rgba(65, 118, 144, 0.1);
+    }
+
+    .form-row small {
+        display: block;
+        color: #666;
+        margin-top: 6px;
+        font-size: 13px;
+    }
+
+    .checkbox-group {
+        border: 2px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 15px;
+        background-color: #fafafa;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .checkbox-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+        margin-right: 10px;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .checkbox-item label {
+        cursor: pointer;
+        margin: 0;
+        font-weight: normal;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 30px;
+        padding-top: 25px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary {
+        background-color: #417690;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #2d5a7b;
+        box-shadow: 0 4px 12px rgba(65, 118, 144, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background-color: #e0e0e0;
+        color: #333;
+    }
+
+    .btn-secondary:hover {
+        background-color: #d0d0d0;
+    }
+
+    @media (max-width: 600px) {
+        .export-content {
+            padding: 20px;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="export-container">
+    <!-- Заголовок -->
+    <div class="export-header">
+        <h1>📊 Выгрузка табеля учета</h1>
+        <p>Создание отчета для передачи в бухгалтерию</p>
+    </div>
+
+    <!-- Форма -->
+    <div class="export-content">
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Параметры периода -->
+            <div class="form-section">
+                <div class="form-section-title">Период</div>
+                
+                <div class="form-row">
+                    <label for="{{ form.start_date.id_for_label }}">{{ form.start_date.label }}</label>
+                    {{ form.start_date }}
+                    <small>Начало периода для отчета</small>
+                </div>
+
+                <div class="form-row">
+                    <label for="{{ form.end_date.id_for_label }}">{{ form.end_date.label }}</label>
+                    {{ form.end_date }}
+                    <small>Конец периода для отчета</small>
+                </div>
+            </div>
+
+            <!-- Параметры документа -->
+            <div class="form-section">
+                <div class="form-section-title">Информация о документе</div>
+                
+                <div class="form-row">
+                    <label for="{{ form.company_name.id_for_label }}">{{ form.company_name.label }}</label>
+                    {{ form.company_name }}
+                    <small>Название вашей организации</small>
+                </div>
+
+                <div class="form-row">
+                    <label for="{{ form.responsible_person.id_for_label }}">{{ form.responsible_person.label }}</label>
+                    {{ form.responsible_person }}
+                    <small>Ответственный за подготовку отчета (например, "Иванов И.И.")</small>
+                </div>
+
+                <div class="form-row">
+                    <div class="checkbox-item">
+                        {{ form.include_completed_tasks }}
+                        <label for="{{ form.include_completed_tasks.id_for_label }}">{{ form.include_completed_tasks.label }}</label>
+                    </div>
+                    <small>Если включено, в Excel появится колонка с количеством выполненных задач за выбранный период.</small>
+                </div>
+            </div>
+
+            <!-- Выбор сотрудников -->
+            <div class="form-section">
+                <div class="form-section-title">Выбор сотрудников</div>
+                
+                <div class="checkbox-group">
+                    {% for choice_value, choice_label in form.employees.field.choices %}
+                        <div class="checkbox-item">
+                            <input type="checkbox" 
+                                   id="id_employees_{{ forloop.counter }}" 
+                                   name="employees" 
+                                   value="{{ choice_value }}"
+                                   {% if choice_value in form.employees.value %}checked{% endif %}>
+                            <label for="id_employees_{{ forloop.counter }}">{{ choice_label }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if form.employees.help_text %}
+                    <small style="display: block; margin-top: 8px; color: #666;">{{ form.employees.help_text }}</small>
+                {% endif %}
+            </div>
+
+            <!-- Кнопки действия -->
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">
+                    💾 Скачать Excel
+                </button>
+                <a href="{% url 'admin:index' %}" class="btn btn-secondary">
+                    ← Отмена
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

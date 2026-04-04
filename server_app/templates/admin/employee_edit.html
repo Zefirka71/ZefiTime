@@ -1,0 +1,496 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}
+{{ title }} | Django administration
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    .employee-form-container {
+        max-width: 900px;
+        margin: 30px auto;
+        padding: 0;
+    }
+
+    .employee-header {
+        background: linear-gradient(135deg, #417690 0%, #2d5a7b 100%);
+        color: white;
+        padding: 25px 30px;
+        border-radius: 8px 8px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .employee-header h1 {
+        margin: 0;
+        font-size: 24px;
+    }
+
+    .employee-header-info {
+        font-size: 14px;
+        opacity: 0.9;
+    }
+
+    .employee-content {
+        background: white;
+        padding: 30px;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .form-section {
+        margin-bottom: 35px;
+    }
+
+    .form-section h3 {
+        border-bottom: 3px solid #417690;
+        padding-bottom: 12px;
+        color: #417690;
+        margin-bottom: 20px;
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="number"],
+    .form-group select {
+        width: 100%;
+        padding: 11px 14px;
+        border: 2px solid #e0e0e0;
+        border-radius: 4px;
+        font-size: 14px;
+        box-sizing: border-box;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group input[type="email"]:focus,
+    .form-group input[type="number"]:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #417690;
+        box-shadow: 0 0 0 3px rgba(65, 118, 144, 0.1);
+    }
+
+    .form-group input[type="text"]:readonly {
+        background-color: #f5f5f5;
+        color: #666;
+        cursor: not-allowed;
+    }
+
+    .form-group small {
+        display: block;
+        color: #666;
+        margin-top: 6px;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        margin-right: 12px;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .checkbox-group label {
+        margin: 0;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 35px;
+        padding-top: 25px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .btn-primary {
+        background-color: #417690;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #2d5a7b;
+        box-shadow: 0 4px 12px rgba(65, 118, 144, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background-color: #e0e0e0;
+        color: #333;
+    }
+
+    .btn-secondary:hover {
+        background-color: #d0d0d0;
+    }
+
+    .btn-export {
+        background-color: #10B981;
+        color: white;
+    }
+
+    .btn-export:hover {
+        background-color: #059669;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+        border-left: 5px solid;
+    }
+
+    .alert-error {
+        background-color: #fef2f2;
+        border-color: #ef4444;
+        color: #991b1b;
+    }
+
+    .alert-success {
+        background-color: #f0fdf4;
+        border-color: #22c55e;
+        color: #166534;
+    }
+
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 8px 0 0 0;
+        color: #dc2626;
+        font-size: 13px;
+    }
+
+    .errorlist li {
+        margin-bottom: 4px;
+    }
+
+    .employee-info-card {
+        background: linear-gradient(135deg, #417690 0%, #2d5a7b 100%);
+        padding: 25px;
+        border-radius: 6px;
+        border-left: 5px solid #1F4E78;
+        margin-bottom: 25px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .info-item {
+        padding: 0;
+    }
+
+    .info-item-label {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.75);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 5px;
+    }
+
+    .info-item-value {
+        font-size: 15px;
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .status-online {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-offline {
+        background-color: #f3f4f6;
+        color: #374151;
+    }
+
+    @media (max-width: 600px) {
+        .employee-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .employee-header h1 {
+            font-size: 20px;
+        }
+
+        .employee-content {
+            padding: 20px;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .employee-info-card {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Улучшения для совместимости с DjangoAdmin */
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .form-row-single {
+        display: block;
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="employee-form-container">
+    <!-- Заголовок -->
+    <div class="employee-header">
+        <div>
+            <h1>{{ title }}</h1>
+            <div class="employee-header-info">
+                Редактирование профиля сотрудника
+            </div>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="employee-content">
+        <!-- Информация о сотруднике -->
+        <div class="employee-info-card">
+            <div class="info-item">
+                <div class="info-item-label">Табельный номер</div>
+                <div class="info-item-value">{{ employee.personnel_number }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-item-label">Пользователь</div>
+                <div class="info-item-value">{{ employee.user.username }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-item-label">Статус</div>
+                <div>
+                    {% if employee.is_online %}
+                        <span class="status-badge status-online">🟢 Онлайн</span>
+                    {% else %}
+                        <span class="status-badge status-offline">⚫ Оффлайн</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% if employee.last_activity %}
+            <div class="info-item">
+                <div class="info-item-label">Последняя активность</div>
+                <div class="info-item-value">{{ employee.last_activity|date:"d.m.Y H:i" }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- Ошибки формы -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-error">
+                    <strong>Ошибка:</strong>
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Секция: Личные данные -->
+            <div class="form-section">
+                <h3>👤 Личные данные</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.first_name.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        <small>Укажите имя сотрудника</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.last_name.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        <small>Укажите фамилию сотрудника</small>
+                    </div>
+                </div>
+
+                <div class="form-group form-row-single">
+                    <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.email.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    <small>Корпоративная почта сотрудника</small>
+                </div>
+            </div>
+
+            <!-- Секция: Информация о работнике -->
+            <div class="form-section">
+                <h3>🏢 Информация о работнике</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.position.id_for_label }}">{{ form.position.label }}</label>
+                        {{ form.position }}
+                        {% if form.position.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.position.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        <small>Должность в компании</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.department.id_for_label }}">{{ form.department.label }}</label>
+                        {{ form.department }}
+                        {% if form.department.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.department.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        <small>Отдел работника</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Секция: Настройки Anti-AFK -->
+            <div class="form-section">
+                <h3>⚙️ Настройки Anti-AFK</h3>
+
+                <div class="checkbox-group">
+                    {{ form.anti_afk_enabled }}
+                    <label for="{{ form.anti_afk_enabled.id_for_label }}">{{ form.anti_afk_enabled.label }}</label>
+                </div>
+                {% if form.anti_afk_enabled.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.anti_afk_enabled.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.anti_afk_idle_minutes.id_for_label }}">{{ form.anti_afk_idle_minutes.label }}</label>
+                        {{ form.anti_afk_idle_minutes }}
+                        {% if form.anti_afk_idle_minutes.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.anti_afk_idle_minutes.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        <small>Минуты бездействия перед предупреждением</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.anti_afk_grace_seconds.id_for_label }}">{{ form.anti_afk_grace_seconds.label }}</label>
+                        {{ form.anti_afk_grace_seconds }}
+                        {% if form.anti_afk_grace_seconds.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.anti_afk_grace_seconds.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        <small>Секунды обратного отсчета</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопки действия -->
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">
+                    💾 Сохранить изменения
+                </button>
+                <a href="{% url 'admin:api_employeeprofile_changelist' %}" class="btn btn-secondary">
+                    ← Вернуться
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

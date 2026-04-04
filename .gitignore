@@ -1,0 +1,13 @@
+.venv-client/
+build/
+dist/
+__pycache__/
+*.py[cod]
+
+server_app/.env
+server_app/.venv/
+server_app/venv/
+server_app/staticfiles/
+server_app/db.sqlite3
+server_app/media/
+local_data.db

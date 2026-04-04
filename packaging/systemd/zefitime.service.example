@@ -1,0 +1,16 @@
+# Пример unit для ручной правки (дублирует install-server-linux.sh).
+# Пути и пользователя подставьте под свою установку.
+
+[Unit]
+Description=ZefiTime Django (gunicorn)
+After=network.target
+
+[Service]
+User=zefitime
+Group=zefitime
+WorkingDirectory=/opt/zefitime/app/server_app
+ExecStart=/opt/zefitime/app/server_app/.venv/bin/gunicorn --bind 0.0.0.0:8000 --workers 3 core.wsgi:application
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

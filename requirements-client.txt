@@ -1,0 +1,5 @@
+# Зависимости только десктоп-клиента (Windows / сборка PyInstaller)
+customtkinter>=5.2.0
+Pillow>=10.0.0
+matplotlib>=3.8.0
+requests>=2.31.0

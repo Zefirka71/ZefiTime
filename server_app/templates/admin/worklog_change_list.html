@@ -1,0 +1,14 @@
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+
+{% block object-tools-items %}
+    {# Оставляем стандартные кнопки (Добавить ...) #}
+    {{ block.super }}
+    
+    {# Добавляем нашу кнопку экспорта #}
+    <li>
+        <a href="export-report/" class="addlink" style="background-color: #417690;">
+            📊 Скачать Табель (Excel)
+        </a>
+    </li>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends "admin/change_list.html" %}
+
+{% block extrahead %}
+{{ block.super }}
+<script>
+    // Автообновление страницы каждые 10 секунд для обновления статуса онлайн/оффлайн
+    setInterval(function() {
+        location.reload();
+    }, 10000);
+    
+    // Обработчик клика на строку таблицы для редактирования профиля
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('.employee-table tbody tr');
+        rows.forEach(row => {
+            row.addEventListener('click', function(e) {
+                // Не следуем ссылке если это клик на ячейку с контентом
+                if (e.target.tagName === 'A') return;
+                
+                // Получаем ID сотрудника из атрибута data-employee-id
+                const employeeId = this.getAttribute('data-employee-id');
+                if (employeeId) {
+                    // Перенаправляем на страницу редактирования
+                    window.location.href = '{{ request.path }}' + employeeId + '/edit/';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+{% block search %}
+{{ block.super }}
+{% endblock %}
+
+{% block date_hierarchy %}{% endblock %}
+
+{% block result_list %}
+<style>
+    .employee-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background: white;
+    }
+    
+    .employee-table thead {
+        background-color: #417690;
+        color: white;
+    }
+    
+    .employee-table th {
+        padding: 12px;
+        text-align: left;
+        font-weight: bold;
+        border-bottom: 2px solid #417690;
+    }
+    
+    .employee-table td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .employee-table tbody tr:hover {
+        background-color: #f5f5f5;
+        cursor: pointer;
+    }
+    
+    .employee-table tbody tr {
+        transition: background-color 0.2s ease;
+    }
+    
+    .status-online {
+        color: #10B981;
+        font-weight: bold;
+    }
+    
+    .status-offline {
+        color: #6B7280;
+        font-weight: bold;
+    }
+    
+    .export-button {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #417690;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    
+    .export-button:hover {
+        background-color: #2d5a7b;
+    }
+</style>
+
+<div class="module change-list">
+    <a href="export-report/" class="export-button">📊 Скачать табель (Excel)</a>
+    
+    <table class="employee-table">
+        <thead>
+            <tr>
+                <th>Табельный номер</th>
+                <th>ФИО</th>
+                <th>Email</th>
+                <th>Должность</th>
+                <th>Отдел</th>
+                <th>Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in cl.result_list %}
+            <tr data-employee-id="{{ employee.id }}">
+                <td>{{ employee.personnel_number }}</td>
+                <td>{{ employee.user.get_full_name|default:employee.user.username }}</td>
+                <td>{{ employee.user.email|default:"-" }}</td>
+                <td>{{ employee.position }}</td>
+                <td>{{ employee.department|default:"-" }}</td>
+                <td>
+                    {% if employee.is_online %}
+                        <span class="status-online">🟢 Онлайн</span>
+                    {% else %}
+                        <span class="status-offline">⚫ Оффлайн</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center; color: #999;">Нет данных о сотрудниках</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
