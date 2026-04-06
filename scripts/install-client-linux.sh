@@ -30,8 +30,8 @@ if ! command -v apt-get >/dev/null 2>&1; then
 fi
 
 echo "==> Установка системных пакетов (запрос пароля sudo)..."
-sudo apt-get update -qq
-sudo apt-get install -y -qq python3-venv python3-tk python3-dev
+sudo apt-get update
+sudo apt-get install -y python3-venv python3-tk python3-dev
 
 CLIENT_DATA="${HOME}/.local/share/zefitime-client"
 VENV="${CLIENT_DATA}/venv"
@@ -56,8 +56,8 @@ fi
 echo "==> Установка зависимостей Python..."
 # shellcheck source=/dev/null
 source "${VENV}/bin/activate"
-pip install --upgrade pip -q
-pip install -r "${REQ}" -q
+pip install --upgrade pip
+pip install -r "${REQ}"
 
 echo "==> Создание команды запуска: ${LAUNCHER}"
 REPO_ESC=$(printf '%q' "${REPO_ROOT}")

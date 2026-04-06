@@ -80,7 +80,10 @@ class LoginWindow(ctk.CTk):
         # Установка иконки
         icon_path = resource_path("assets", "logo.ico")
         if os.path.exists(icon_path):
-            self.iconbitmap(icon_path)
+            try:
+                self.iconbitmap(icon_path)
+            except tk.TclError:
+                pass  # На Linux iconbitmap может не работать с .ico
 
         # Логотип (картинка)
         logo_frame = ctk.CTkFrame(self, fg_color="transparent")
@@ -167,7 +170,10 @@ class AddTaskWindow(ctk.CTkToplevel):
         # Установка иконки - такая же как у главного приложения
         icon_path = resource_path("assets", "logo.ico")
         if os.path.exists(icon_path):
-            self.iconbitmap(icon_path)
+            try:
+                self.iconbitmap(icon_path)
+            except tk.TclError:
+                pass  # На Linux iconbitmap может не работать с .ico
         
         # Центрируем окно относительно родителя
         self.transient(parent)
@@ -505,7 +511,10 @@ class DashboardWindow(ctk.CTk):
         
         icon_path = resource_path("assets", "logo.ico")
         if os.path.exists(icon_path):
-            self.iconbitmap(icon_path)
+            try:
+                self.iconbitmap(icon_path)
+            except tk.TclError:
+                pass  # На Linux iconbitmap может не работать с .ico
 
         self.is_running = False
         self.start_time = None
